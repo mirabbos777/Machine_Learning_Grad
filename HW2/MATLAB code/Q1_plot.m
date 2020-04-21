@@ -24,6 +24,7 @@ AUC_value = num2str(AUC_value, '%.4f');
 txt = strcat('AUC = ',AUC_value);
 t = text(0.62, 0.14, txt);
 t.FontSize = 15;
-print('Q1_Figure', '-dpng', '-r800')
+t.Color = 'r';
+print('Figure_Q1', '-dpng', '-r600')
 
 hold off;
