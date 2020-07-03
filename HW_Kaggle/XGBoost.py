@@ -95,10 +95,10 @@ X_train_train, X_train_test, y_train_train, y_train_test = train_test_split(X_tr
 max_auc = 0
 opt_param = 0
 param_grid = {
-                'Eta_list':         numpy.arange(0.0,  0.5,  0.01).tolist(),  # 50
-                'Lambda_list':      numpy.arange(5.0,  10.0, 0.5).tolist(),   # 10
-                'Gamma_list':       numpy.arange(20.0, 30.0, 1.0).tolist(),   # 10
-                'Child_weight':     numpy.arange(0.0,  10.0, 1.0).tolist()    # 10
+                'Eta_list':         numpy.arange(0.0,  0.5,  0.1).tolist(),  # 50
+                'Lambda_list':      numpy.arange(5.0,  10.0, 1.0).tolist(),   # 10
+                'Gamma_list':       numpy.arange(20.0, 25.0, 1.0).tolist(),   # 10
+                'Child_weight':     numpy.arange(0.0,  5.0, 1.0).tolist()    # 10
 }
 param_grid = list(ParameterGrid(param_grid))
 for i in param_grid:
@@ -129,10 +129,10 @@ print(opt_param)
 
 
 # Train model by optimal parameters
-xgb_train_data = xgboost.DMatrix(X_train, label=y_train)
-xgb_test_data = xgboost.DMatrix(X_test)
-xgb = xgboost.train(opt_param, xgb_train_data, num_boost_round=10)
-target_column = xgb.predict(xgb_test_data)
+XGB_train_data = xgboost.DMatrix(X_train, label=y_train)
+XGB_test_data = xgboost.DMatrix(X_test)
+XGB = xgboost.train(opt_param, XGB_train_data, num_boost_round=10)
+target_column = xgb.predict(XGB_test_data)
 
 
 # Output results into a csv file
