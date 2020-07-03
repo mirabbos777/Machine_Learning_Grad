@@ -28,7 +28,7 @@ infptr_2 = open('test.csv', newline='')
 now = time.localtime(time.time())
 file_name = "{:0>4d}{:0>2d}{:0>2d}".format(now.tm_year, now.tm_mon, now.tm_mday) + \
             "T{:0>2d}{:0>2d}{:0>2d}".format(now.tm_hour, now.tm_min, now.tm_sec) + \
-            "_LogReg_Mode" + str(sys.argv[1]) + ".csv"
+            "_SVR_Mode" + str(sys.argv[1]) + ".csv"
 outfptr = open(file_name, 'w', newline='')
 
 
@@ -115,6 +115,7 @@ for i in param_grid:
 
 print("Optimal parameters:")
 print(opt_param)
+
 
 # Train model by optimal parameters
 svr = SVR(kernel=opt_param['Kernel_list'], degree=opt_param['Deg_list'], gamma=opt_param['Gamma_list'], C=opt_param['C_list'], max_iter=-1)

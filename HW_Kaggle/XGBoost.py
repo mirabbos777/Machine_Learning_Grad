@@ -28,7 +28,7 @@ infptr_2 = open('test.csv', newline='')
 now = time.localtime(time.time())
 file_name = "{:0>4d}{:0>2d}{:0>2d}".format(now.tm_year, now.tm_mon, now.tm_mday) + \
             "T{:0>2d}{:0>2d}{:0>2d}".format(now.tm_hour, now.tm_min, now.tm_sec) + \
-            "_LogReg_Mode" + str(sys.argv[1]) + ".csv"
+            "_XGBoost_Mode" + str(sys.argv[1]) + ".csv"
 outfptr = open(file_name, 'w', newline='')
 
 
@@ -127,11 +127,12 @@ for i in param_grid:
 print("Optimal parameters:")
 print(opt_param)
 
+
 # Train model by optimal parameters
 xgb_train_data = xgboost.DMatrix(X_train, label=y_train)
 xgb_test_data = xgboost.DMatrix(X_test)
 xgb = xgboost.train(opt_param, xgb_train_data, num_boost_round=10)
-temp_result = xgb.predict(xgb_test_data)
+target_column = xgb.predict(xgb_test_data)
 
 
 # Output results into a csv file
