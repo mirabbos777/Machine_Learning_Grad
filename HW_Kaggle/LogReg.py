@@ -26,8 +26,9 @@ infptr_2 = open('test.csv', newline='')
 
 # Open output csv file
 now = time.localtime(time.time())
-file_name = "submission_{:0>4d}{:0>2d}{:0>2d}".format(now.tm_year, now.tm_mon, now.tm_mday) + \
-            "T{:0>2d}{:0>2d}{:0>2d}".format(now.tm_hour, now.tm_min, now.tm_sec) + ".csv"
+file_name = "{:0>4d}{:0>2d}{:0>2d}".format(now.tm_year, now.tm_mon, now.tm_mday) + \
+            "T{:0>2d}{:0>2d}{:0>2d}".format(now.tm_hour, now.tm_min, now.tm_sec) + \
+            "_LogReg_Mode" + str(sys.argv[1]) + ".csv"
 outfptr = open(file_name, 'w', newline='')
 
 
