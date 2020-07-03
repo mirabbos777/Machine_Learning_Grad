@@ -58,24 +58,24 @@ X_test = numpy.array(X_test, dtype='float')
 
 # (Mode 1)  Delete useless columns by calculating Pearson r
 #           Calculate Pearson correlation coefficient of y_train and every X_train's column
-#           Drop out columns of X_train which have too small (<0.005) correlation coefficient
+#           Drop out columns of X_train which have too small (<0.05) correlation coefficient
 # (Mode 2)  Delete useless columns by LB probing 
 #           Keep only important features found by LB probing
 # (Mode 3)  Do nothing
-if sys.argv[1] == 1:  # Mode 1
+if int(sys.argv[1]) == 1:  # Mode 1
     delete_column_num = []
     cov_matrix = numpy.cov(y_train, X_train, rowvar=False)
     for i in range(1, cov_matrix.shape[0]):
         r = cov_matrix[0][i]/(numpy.std(y_train)*numpy.std(X_train[:, i-1]))
-        if r < 0.01:
+        if abs(r) < 0.05:
             delete_column_num.append(i-1)
     # Delete columns of training data and testing data simultaneously
     X_train = numpy.delete(X_train, delete_column_num, 1)
     X_test = numpy.delete(X_test, delete_column_num, 1)
-elif sys.argv[1] == 2:  # Mode 2
+elif int(sys.argv[1]) == 2:  # Mode 2
     remain_column = [16, 29, 33, 45, 63, 65, 70, 73, 91, 106, 108, 117, 132, 164, 189, 199, 209, 217, 239]
     delete_column = [i for i in range(0, 300) if i not in remain_column]
-    X = numpy.delete(X, delete_column, 1)
+    X_train = numpy.delete(X_train, delete_column, 1)
     X_test = numpy.delete(X_test, delete_column, 1)
 
 
@@ -95,9 +95,9 @@ X_train_train, X_train_test, y_train_train, y_train_test = train_test_split(X_tr
 max_auc = 0
 opt_param = 0
 param_grid = {
-                'Eta_list':         numpy.arange(0.0,  0.5,  0.1).tolist(),  # 50
-                'Lambda_list':      numpy.arange(5.0,  10.0, 1.0).tolist(),   # 10
-                'Gamma_list':       numpy.arange(20.0, 25.0, 1.0).tolist(),   # 10
+                'Eta_list':         numpy.arange(0.0,  0.5,  0.1).tolist(),  # 5
+                'Lambda_list':      numpy.arange(5.0,  10.0, 1.0).tolist(),   # 5
+                'Gamma_list':       numpy.arange(20.0, 30.0, 0.5).tolist(),   # 10
                 'Child_weight':     numpy.arange(0.0,  5.0, 1.0).tolist()    # 10
 }
 param_grid = list(ParameterGrid(param_grid))
@@ -114,10 +114,6 @@ for i in param_grid:
     print("# of rounds: %d" % param_grid.index(i))
     xgb_train_data = xgboost.DMatrix(X_train_train, label=y_train_train)
     xgb_test_data = xgboost.DMatrix(X_train_test)
-    
-    print(xgb_train_data.feature_names)
-    
-    exit()
     xgb = xgboost.train(param_instance, xgb_train_data, num_boost_round=10)
     temp_result = xgb.predict(xgb_test_data)
     fpr, tpr, skip = metrics.roc_curve(y_train_test, temp_result)
