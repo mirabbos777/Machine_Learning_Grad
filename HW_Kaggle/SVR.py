@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import RandomOverSampler
 from sklearn.decomposition import PCA
 from sklearn.model_selection import ParameterGrid, train_test_split
-from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVR
 from sklearn import metrics
 
 
@@ -95,25 +95,31 @@ X_train_train, X_train_test, y_train_train, y_train_test = train_test_split(X_tr
 max_auc = 0
 opt_param = 0
 param_grid = {
-                'C_list':       numpy.arange(0.01, 1.0, 0.01).tolist(),
-                'Norm_list':    ['l1', 'l2']
+                'Kernel_list':      ['poly'],
+                'Deg_list':         numpy.array(range(1, 3)).tolist(),
+                'Gamma_list':       numpy.arange(0.01, 0.5, 0.01).tolist(),
+                'C_list':           numpy.arange(0.01, 0.1, 0.01).tolist(),
+                'Epsilon_list':     numpy.arange(0.01, 0.5, 0.01).tolist()
 }
 param_grid = list(ParameterGrid(param_grid))
 for i in param_grid:
-    clf = LogisticRegression(class_weight='balanced', solver='liblinear', penalty=i['Norm_list'], C=i['C_list'], max_iter=10000)
-    clf.fit(X_train_train, y_train_train)
-    temp_result = clf.predict_proba(X_train_test)[:, 1]
+    print(param_grid.index(i))
+    svr = SVR(kernel=i['Kernel_list'], degree=i['Deg_list'], gamma=i['Gamma_list'], C=i['C_list'], max_iter=-1)
+    svr.fit(X_train_train, y_train_train)
+    temp_result = svr.predict(X_train_test)
     fpr, tpr, skip = metrics.roc_curve(y_train_test, temp_result)
     temp_auc = metrics.auc(fpr, tpr)
     if max_auc < temp_auc:
         max_auc = temp_auc
         opt_param = i
 
+print("Optimal parameters:")
+print(opt_param)
 
 # Train model by optimal parameters
-clf = LogisticRegression(class_weight='balanced', solver='liblinear', penalty=opt_param['Norm_list'], C=opt_param['C_list'], max_iter=10000)
-clf.fit(X_train, y_train)
-target_column = clf.predict_proba(X_test)[:, 1]
+svr = SVR(kernel=opt_param['Kernel_list'], degree=opt_param['Deg_list'], gamma=opt_param['Gamma_list'], C=opt_param['C_list'], max_iter=-1)
+svr.fit(X_train, y_train)
+target_column = svr.predict(X_test)
 
 
 # Output results into a csv file
