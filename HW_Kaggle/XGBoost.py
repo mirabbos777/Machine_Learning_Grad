@@ -67,7 +67,7 @@ if sys.argv[1] == 1:  # Mode 1
     cov_matrix = numpy.cov(y_train, X_train, rowvar=False)
     for i in range(1, cov_matrix.shape[0]):
         r = cov_matrix[0][i]/(numpy.std(y_train)*numpy.std(X_train[:, i-1]))
-        if r < 0.005:
+        if r < 0.01:
             delete_column_num.append(i-1)
     # Delete columns of training data and testing data simultaneously
     X_train = numpy.delete(X_train, delete_column_num, 1)
@@ -110,12 +110,14 @@ for i in param_grid:
                     'lambda':            i['Lambda_list'],
                     'gamma':             i['Gamma_list'],
                     'min_child_weight':  i['Child_weight'],
-                    'max_delta_step':    2,
-                    'subsample':         0.5
     }
     print("# of rounds: %d" % param_grid.index(i))
     xgb_train_data = xgboost.DMatrix(X_train_train, label=y_train_train)
     xgb_test_data = xgboost.DMatrix(X_train_test)
+    
+    print(xgb_train_data.feature_names)
+    
+    exit()
     xgb = xgboost.train(param_instance, xgb_train_data, num_boost_round=10)
     temp_result = xgb.predict(xgb_test_data)
     fpr, tpr, skip = metrics.roc_curve(y_train_test, temp_result)
